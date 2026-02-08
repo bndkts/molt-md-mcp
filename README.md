@@ -13,17 +13,17 @@ A Model Context Protocol (MCP) server that provides LLM access to [molt-md](http
 
 ## Installation
 
-Install using `uv` (recommended):
+Install directly from GitHub using `uvx`:
 
 ```bash
-uvx molt-mcp
+uvx --from git+https://github.com/bndkts/molt-md-mcp molt-mcp
 ```
 
-Or install from source:
+Or install from source for development:
 
 ```bash
-git clone https://github.com/yourusername/molt-mcp.git
-cd molt-mcp
+git clone https://github.com/bndkts/molt-md-mcp.git
+cd molt-md-mcp
 uv pip install -e .
 ```
 
@@ -41,7 +41,7 @@ Add to your Claude Desktop config file:
   "mcpServers": {
     "molt-md": {
       "command": "uvx",
-      "args": ["molt-mcp"],
+      "args": ["--from", "git+https://github.com/bndkts/molt-md-mcp", "molt-mcp"],
       "env": {
         "MOLT_API_KEY": "your-api-key-here",
         "MOLT_WORKSPACE_ID": "your-workspace-id-here"
@@ -133,8 +133,8 @@ Assistant: [Uses read_doc with lines=1 and as_markdown=true]
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/molt-mcp.git
-cd molt-mcp
+git clone https://github.com/bndkts/molt-md-mcp.git
+cd molt-md-mcp
 
 # Install dependencies
 uv pip install -e .
