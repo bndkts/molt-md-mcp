@@ -1,0 +1,189 @@
+# molt-mcp
+
+A Model Context Protocol (MCP) server that provides LLM access to [molt-md](https://molt-md.com), an encrypted markdown document hosting service. This server wraps the complete molt-md API, enabling AI assistants to create, read, update, and manage encrypted markdown documents and workspaces.
+
+## Features
+
+- **Full API Coverage** - Every molt-md endpoint exposed as an MCP tool
+- **Encrypted Storage** - End-to-end encryption with AES-256-GCM
+- **Read/Write Key Support** - Automatic permission detection and tool filtering
+- **Workspace Management** - Bundle and organize multiple documents
+- **Partial Fetches** - Efficient document previews with line-limited reads
+- **Version Control** - Optimistic concurrency control with ETag support
+
+## Installation
+
+Install using `uv` (recommended):
+
+```bash
+uvx molt-mcp
+```
+
+Or install from source:
+
+```bash
+git clone https://github.com/yourusername/molt-mcp.git
+cd molt-mcp
+uv pip install -e .
+```
+
+## Configuration
+
+### Claude Desktop
+
+Add to your Claude Desktop config file:
+
+**macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`  
+**Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "molt-md": {
+      "command": "uvx",
+      "args": ["molt-mcp"],
+      "env": {
+        "MOLT_API_KEY": "your-api-key-here",
+        "MOLT_WORKSPACE_ID": "your-workspace-id-here"
+      }
+    }
+  }
+}
+```
+
+### Environment Variables
+
+- **`MOLT_API_KEY`** (required) - Your molt-md write key or read key
+- **`MOLT_WORKSPACE_ID`** (optional) - Access documents through a specific workspace
+- **`MOLT_BASE_URL`** (optional) - API base URL (defaults to `https://molt-md.com/api/v1`)
+
+### Read vs Write Keys
+
+The server automatically detects whether you're using a read key or write key:
+
+- **Write key** → All tools enabled (read + create + update + delete)
+- **Read key** → Only read-only tools available
+
+## Available Tools
+
+### Read-Only Tools (Available with both key types)
+
+- **`health_check`** - Check if the molt-md API is available
+- **`get_metrics`** - Get database statistics (document and workspace counts)
+- **`read_doc`** - Read a document's decrypted content
+  - Supports partial fetches with `lines` parameter
+  - Returns JSON with metadata or plain markdown
+- **`read_workspace`** - Read a workspace's content (name and entries)
+  - Supports preview generation with `preview_lines` parameter
+
+### Write Tools (Require write key)
+
+#### Document Operations
+- **`create_doc`** - Create a new encrypted document
+  - Returns document ID, write key, and read key
+- **`update_doc`** - Replace a document's entire content
+  - Supports optimistic locking with `if_match` (version ETag)
+- **`append_doc`** - Append content to the end of a document
+  - Supports optimistic locking with `if_match`
+- **`delete_doc`** - Permanently delete a document
+
+#### Workspace Operations
+- **`create_workspace`** - Create a new workspace to bundle documents
+  - Returns workspace ID, write key, and read key
+- **`update_workspace`** - Replace a workspace's content (name and entries)
+  - Supports optimistic locking with `if_match`
+- **`delete_workspace`** - Permanently delete a workspace
+  - Does not delete referenced documents
+
+## Usage Examples
+
+### Basic Document Operations
+
+```
+User: Create a new document with the title "Meeting Notes"
+Assistant: [Uses create_doc tool] → Returns doc ID and keys
+
+User: Read that document
+Assistant: [Uses read_doc tool with the doc ID]
+
+User: Append a new section to the document
+Assistant: [Uses append_doc tool]
+```
+
+### Workspace Management
+
+```
+User: Create a workspace called "Project Alpha" with these two documents
+Assistant: [Uses create_workspace tool with document IDs and keys]
+
+User: Show me a preview of all documents in the workspace
+Assistant: [Uses read_workspace with preview_lines=1]
+```
+
+### Partial Fetches for Efficiency
+
+```
+User: Show me just the title of document xyz
+Assistant: [Uses read_doc with lines=1 and as_markdown=true]
+```
+
+## Development
+
+### Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/molt-mcp.git
+cd molt-mcp
+
+# Install dependencies
+uv pip install -e .
+
+# Run the server
+molt-mcp
+```
+
+### Testing
+
+Set up environment variables and test with the MCP Inspector:
+
+```bash
+export MOLT_API_KEY="your-test-key"
+export MOLT_WORKSPACE_ID="optional-workspace-id"
+npx @modelcontextprotocol/inspector molt-mcp
+```
+
+## Security Notes
+
+- **Never commit API keys to version control**
+- **Keys are shown only once** during document/workspace creation - save them securely
+- **Read keys** can be safely shared for read-only collaborators
+- **Write keys** provide full access - share only with trusted editors
+- **Lost keys** cannot be recovered - the content becomes permanently inaccessible
+
+## Architecture
+
+This is a thin wrapper around the molt-md REST API:
+
+1. **FastMCP** handles the MCP protocol and tool registration
+2. **httpx** makes async HTTP requests to the molt-md API
+3. **Environment config** provides API key and workspace context
+4. **Automatic key detection** filters available tools based on permissions
+
+## Links
+
+- **molt-md**: [https://molt-md.com](https://molt-md.com)
+- **MCP Specification**: [https://modelcontextprotocol.io](https://modelcontextprotocol.io)
+- **FastMCP**: [https://github.com/jlowin/fastmcp](https://github.com/jlowin/fastmcp)
+
+## License
+
+MIT License - see LICENSE file for details
+
+## Contributing
+
+Contributions are welcome! Please open an issue or pull request on GitHub.
+
+---
+
+Built with ❤️ for the Model Context Protocol ecosystem
