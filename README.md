@@ -6,7 +6,7 @@ A Model Context Protocol (MCP) server that provides LLM access to [molt-md](http
 
 - **Full API Coverage** - Every molt-md endpoint exposed as an MCP tool
 - **Encrypted Storage** - End-to-end encryption with AES-256-GCM
-- **Read/Write Key Support** - Automatic permission detection and tool filtering
+- **Read/Write Key Support** - Permission enforcement via the API's dual-key model
 - **Workspace Management** - Bundle and organize multiple documents
 - **Partial Fetches** - Efficient document previews with line-limited reads
 - **Version Control** - Optimistic concurrency control with ETag support
@@ -57,12 +57,12 @@ Add to your Claude Desktop config file:
 - **`MOLT_WORKSPACE_ID`** (optional) - Access documents through a specific workspace
 - **`MOLT_BASE_URL`** (optional) - API base URL (defaults to `https://molt-md.com/api/v1`)
 
-### Read vs Write Keys
+### Permission Model
 
-The server automatically detects whether you're using a read key or write key:
+The server passes your configured key to the molt-md API on every request:
 
-- **Write key** → All tools enabled (read + create + update + delete)
-- **Read key** → Only read-only tools available
+- **Write key** → All operations succeed (read + create + update + delete)
+- **Read key** → Read operations succeed; write operations return `403 Forbidden` from the API
 
 ## Available Tools
 
@@ -166,9 +166,9 @@ npx @modelcontextprotocol/inspector molt-mcp
 This is a thin wrapper around the molt-md REST API:
 
 1. **FastMCP** handles the MCP protocol and tool registration
-2. **httpx** makes async HTTP requests to the molt-md API
-3. **Environment config** provides API key and workspace context
-4. **Automatic key detection** filters available tools based on permissions
+2. **httpx** makes async HTTP requests with connection pooling
+3. **Environment config** provides API key and optional workspace context
+4. **UUID validation** and **ETag formatting** ensure correct API usage
 
 ## Links
 
