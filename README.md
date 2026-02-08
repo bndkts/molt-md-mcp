@@ -1,10 +1,10 @@
 # molt-mcp
 
-A Model Context Protocol (MCP) server that provides LLM access to [molt-md](https://molt-md.com), an encrypted markdown document hosting service. **Turn any markdown file into an LLM-accessible knowledge base** by uploading it to molt-md and accessing it through this MCP server. Your AI assistant can read, update, and manage encrypted markdown documents and workspaces.
+A Model Context Protocol (MCP) server that provides LLM access to [molt-md](https://molt-md.com), an encrypted markdown document hosting service. **Turn your markdown files into an LLM-accessible knowledge base** by uploading them to molt-md and accessing them through this MCP server. Your AI assistant can read, update, and manage encrypted markdown documents organized in workspaces.
 
 ## Features
 
-- **Markdown → MCP Server** - Convert your markdown files into LLM-accessible storage (free while in beta)
+- **Markdown → MCP Server** - Organize your markdown files into LLM-accessible storage with workspaces (free while in beta)
 - **Full API Coverage** - Every molt-md endpoint exposed as an MCP tool
 - **Encrypted Storage** - End-to-end encryption with AES-256-GCM
 - **Read/Write Key Support** - Permission enforcement via the API's dual-key model
