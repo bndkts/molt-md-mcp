@@ -24,7 +24,7 @@ mcp = FastMCP("molt-md")
 # Configuration from environment
 WORKSPACE_ID = os.getenv("MOLT_WORKSPACE_ID", "")
 API_KEY = os.getenv("MOLT_API_KEY", "")
-BASE_URL = os.getenv("MOLT_BASE_URL", "https://molt-md.com/api/v1")
+BASE_URL = os.getenv("MOLT_BASE_URL", "https://api.molt-md.com/api/v1")
 
 # UUID validation pattern
 _UUID_RE = re.compile(

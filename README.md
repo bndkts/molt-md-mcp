@@ -54,9 +54,9 @@ Add to your Claude Desktop config file:
 
 ### Environment Variables
 
-- **`MOLT_API_KEY`** (required) - Your molt-md write key or read key
+- **`MOLT_API_KEY`** (required) - Your molt-md write key or read key (obtained by creating a document)
 - **`MOLT_WORKSPACE_ID`** (optional) - Access documents through a specific workspace
-- **`MOLT_BASE_URL`** (optional) - API base URL (defaults to `https://molt-md.com/api/v1`)
+- **`MOLT_BASE_URL`** (optional) - API base URL (defaults to `https://api.molt-md.com/api/v1`; use `http://localhost:8000/api/v1` for local development)
 
 ### Permission Model
 
@@ -146,11 +146,36 @@ molt-mcp
 
 ### Testing
 
-Set up environment variables and test with the MCP Inspector:
+**With local molt-md API:**
 
 ```bash
-export MOLT_API_KEY="your-test-key"
-export MOLT_WORKSPACE_ID="optional-workspace-id"
+# Start the molt-md API server first (in another terminal)
+cd /path/to/molt-md
+cargo run  # or your preferred method
+
+# Create a test document to get keys
+curl -X POST http://localhost:8000/api/v1/docs \
+  -H "Content-Type: application/json" \
+  -d '{"content": "# Test Document"}'
+# Save the write_key and id from the response
+
+# Run the MCP server
+export MOLT_BASE_URL="http://localhost:8000/api/v1"
+export MOLT_API_KEY="your-write-key-here"
+npx @modelcontextprotocol/inspector molt-mcp
+```
+
+**With production molt-md API:**
+
+```bash
+# Create a test document to get keys
+curl -X POST https://api.molt-md.com/api/v1/docs \
+  -H "Content-Type: application/json" \
+  -d '{"content": "# Test Document"}'
+# Save the write_key from the response
+
+# Run the MCP server
+export MOLT_API_KEY="your-write-key-here"
 npx @modelcontextprotocol/inspector molt-mcp
 ```
 
