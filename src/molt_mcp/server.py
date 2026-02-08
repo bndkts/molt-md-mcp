@@ -412,9 +412,7 @@ def main():
 
     logger.info("Starting molt-md MCP server")
     logger.info(f"Base URL: {BASE_URL}")
-    logger.info(
-        f"Workspace ID: {WORKSPACE_ID or 'Not set (accessing docs directly)'}"
-    )
+    logger.info(f"Workspace ID: {WORKSPACE_ID or 'Not set (accessing docs directly)'}")
 
     mcp.run()
 
